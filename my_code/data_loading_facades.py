@@ -45,8 +45,11 @@ class FacadeDataset(data.Dataset):
         layout_path = self.layout_files[index]
         facade_img = Image.open(facade_path).resize(img_size)
         layout_img = Image.open(layout_path).resize(img_size)
-        facade_img = np.array(facade_img)/255
-        layout_img = np.array(layout_img)/255
+        # facade_img = np.array(facade_img)/255
+        # layout_img = np.array(layout_img)/255
+        facade_img = (np.array(facade_img) / 127.5) - 1
+        layout_img = (np.array(layout_img) / 127.5) - 1
+
         # MR_image = MR_image.reshape([MR_image.shape[2],MR_image[0],MR_image[1]])
      
         # if len(image.shape) ==2:
@@ -69,13 +72,15 @@ def segment_dataset_and_save(destination_folder, dataloader, model, device):
                    
         output = model(layout_images.to(device))
         output_numpy = np.transpose(output.cpu().detach().numpy(),(0,2,3,1))
-        # output_numpy = output_numpy*255
+                
         
         facade_numpy = np.transpose(facade_images.detach().numpy(),(0,2,3,1))
-        facade_numpy = facade_numpy * 255
+        # facade_numpy = facade_numpy * 255
+        facade_numpy = (facade_numpy + 1) * 127.5
         
         for k, out_img in enumerate(output_numpy):
-           out_img = (out_img * 255).astype(np.uint8)
+           # out_img = (out_img * 255).astype(np.uint8)
+           out_img = ((out_img + 1) * 127.5).astype(np.uint8)
            im = Image.fromarray(out_img)
            
            paired_im = np.hstack((facade_numpy[k,:,:,:], 255*np.ones((output_numpy[k,:,:,:].shape[0], 50, 3)), im))
