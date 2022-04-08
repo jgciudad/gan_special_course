@@ -105,7 +105,7 @@ def segment_dataset_and_save(destination_folder, dataloader, model, device):
         output = TF.normalize(output,(-1, -1, -1),(1/0.5, 1/0.5, 1/0.5)) # Undo normalization
         output_numpy = np.transpose(output.cpu().detach().numpy(),(0,2,3,1))
                 
-        
+        facade_images = TF.normalize(facade_images,(-1, -1, -1),(1/0.5, 1/0.5, 1/0.5)) # Undo normalization
         facade_numpy = np.transpose(facade_images.detach().numpy(),(0,2,3,1))
         # facade_numpy = facade_numpy * 255  # undo [0,1] normalization 
         facade_numpy = (facade_numpy + 1) * 127.5 # undo [-1,1] normalization 

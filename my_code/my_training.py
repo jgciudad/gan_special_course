@@ -75,13 +75,7 @@ G_GAN_history_epochs = []
 G_L1_history_epochs = []
 
 for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
-    
-    if (epoch+1) in [1, 60, 100, 150, 200, 250, 300]:
-        destination_epoch_train = os.path.join(test_path,'generated_images','train','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_train, train_dataloader, model.netG, model.device)
-        destination_epoch_test = os.path.join(test_path,'generated_images','test','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_test, test_dataloader, model.netG, model.device)
-        
+           
     print('Epoch', epoch)
 
     epoch_start_time = time.time()  # timer for entire epoch
@@ -143,6 +137,12 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
     G_history_epochs.append(np.mean(G_history_batches))
     G_GAN_history_epochs.append(np.mean(G_GAN_history_batches))
     G_L1_history_epochs.append(np.mean(G_L1_history_batches))  
+    
+    if (epoch+1) in [1, 60, 100, 150, 200, 250, 300]:
+        destination_epoch_train = os.path.join(test_path,'generated_images','train','epoch_'+str(epoch+1))
+        segment_dataset_and_save(destination_epoch_train, train_dataloader, model.netG, model.device)
+        destination_epoch_test = os.path.join(test_path,'generated_images','test','epoch_'+str(epoch+1))
+        segment_dataset_and_save(destination_epoch_test, test_dataloader, model.netG, model.device)
         
     print('Time taken:', str(datetime.timedelta(seconds = time.time()-epoch_start_time)))
     # print('End of epoch %d / \t Time Taken: %d sec' % (epoch, NUM_EPOCHS + opt.n_epochs_decay, time.time() - epoch_start_time))
