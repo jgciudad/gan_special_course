@@ -228,11 +228,11 @@ class GANLoss(nn.Module):
                 
         else:
             
-            # Check if label_flipping, and if it is flip the labels 20% percent of the time
+            # Check if label_flipping, and if it is flip the labels 35% percent of the time
             flip = False
             if label_flipping == True:
                 th = random.uniform(0.0, 1.0)
-                if th > 0.8:
+                if th < 0.35:
                     flip = True
     
             if target_is_real:
