@@ -9,6 +9,7 @@ import torch
 import my_networks
 import torch.nn as nn
 from collections import OrderedDict
+import functools
 
 
 class Pix2PixModel():
@@ -21,7 +22,7 @@ class Pix2PixModel():
                  output_nc = 3,
                  ngf = 64,
                  ndf = 64,
-                 norm_layer= nn.BatchNorm2d,
+                 norm_layer= functools.partial(nn.BatchNorm2d, affine=True, track_running_stats=True), #functools.partial(nn.InstanceNorm2d, affine=False, track_running_stats=False)
                  dropout_G = False,
                  dropout_D = False,
                  label_flipping = False,
