@@ -40,15 +40,14 @@ facade_dataset_test = FacadeDataset(images_path_test)
 
 model = Pix2PixModel(input_nc = 1,
                      output_nc = 3,
-                     lambda_L1 = 1,
-                     dropout_G = True,
-                     dropout_D = True,
-                     label_flipping = True,
-                     label_smoothing = False,
-                     n_layers_D = 2)
+                     lambda_L1 = 100,
+                     dropout_G = False,
+                     dropout_D = False,
+                     label_flipping = False,
+                     label_smoothing = False)
 total_iters = 0                # the total number of training iterations
 
-NUM_EPOCHS = 2
+NUM_EPOCHS = 60
 D_STARTING_EPOCH = 0
 BATCH_SIZE = 1
 # print_freq = 100 # frequency of showing training results on console

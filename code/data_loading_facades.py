@@ -56,8 +56,8 @@ class FacadeDataset(data.Dataset):
             target_tensor = TF.hflip(target_tensor)
         
         # Normalization
-        input_tensor = TF.normalize(input_tensor,(0.5), (0.5))
-        target_tensor = TF.normalize(target_tensor,(0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        input_tensor = TF.normalize(input_tensor,(127.5), (127.5))
+        target_tensor = TF.normalize(target_tensor,(127.5, 127.5, 127.5), (127.5, 127.5, 127.5))
         
         return input_tensor, target_tensor
 
@@ -72,8 +72,8 @@ class FacadeDataset(data.Dataset):
         # layout_img = np.array(layout_img)/255
         
         # [-1,1] normalization
-        facade_img = (np.array(facade_img) / 127.5) - 1
-        layout_img = (np.array(layout_img) / 127.5) - 1
+        # facade_img = (np.array(facade_img) / 127.5) - 1
+        # layout_img = (np.array(layout_img) / 127.5) - 1
 
         # MR_image = MR_image.reshape([MR_image.shape[2],MR_image[0],MR_image[1]])
      
@@ -83,8 +83,8 @@ class FacadeDataset(data.Dataset):
         #     #if the image is .png (has 4 channels) convert the image from RGBA2RGB
         #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
         
-        layout_tensor = torch.from_numpy(layout_img).float().unsqueeze(0)
-        facade_tensor =  torch.from_numpy(facade_img).permute(2,0,1).float()
+        layout_tensor = torch.from_numpy(np.array(layout_img)).float().unsqueeze(0)
+        facade_tensor =  torch.from_numpy(np.array(facade_img)).permute(2,0,1).float()
         
         # Random flipping and normalization
         layout_tensor, facade_tensor = self.transform(layout_tensor, facade_tensor)
@@ -102,17 +102,17 @@ def segment_dataset_and_save(destination_folder, dataloader, model, device):
         layout_images, facade_images, facade_paths = buildings_data
                    
         output = model(layout_images.to(device))
-        output = TF.normalize(output,(-1, -1, -1),(1/0.5, 1/0.5, 1/0.5)) # Undo normalization
+        output = TF.normalize(output,(-1, -1, -1),(1/127.5, 1/127.5, 1/127.5)) # Undo normalization
         output_numpy = np.transpose(output.cpu().detach().numpy(),(0,2,3,1))
                 
-        facade_images = TF.normalize(facade_images,(-1, -1, -1),(1/0.5, 1/0.5, 1/0.5)) # Undo normalization
+        facade_images = TF.normalize(facade_images,(-1, -1, -1),(1/127.5, 1/127.5, 1/127.5)) # Undo normalization
         facade_numpy = np.transpose(facade_images.detach().numpy(),(0,2,3,1))
         # facade_numpy = facade_numpy * 255  # undo [0,1] normalization 
-        facade_numpy = (facade_numpy + 1) * 127.5 # undo [-1,1] normalization 
+        # facade_numpy = (facade_numpy + 1) * 127.5 # undo [-1,1] normalization 
         
         for k, out_img in enumerate(output_numpy):
            # out_img = (out_img * 255).astype(np.uint8) # undo [0,1] normalization 
-           out_img = ((out_img + 1) * 127.5).astype(np.uint8) # undo [-1,1] normalization 
+           # out_img = ((out_img + 1) * 127.5).astype(np.uint8) # undo [-1,1] normalization 
            im = Image.fromarray(out_img)
            
            paired_im = np.hstack((facade_numpy[k,:,:,:], 255*np.ones((output_numpy[k,:,:,:].shape[0], 50, 3)), im))
