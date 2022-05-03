@@ -113,7 +113,7 @@ def segment_dataset_and_save(destination_folder, dataloader, model, device):
         for k, out_img in enumerate(output_numpy):
            # out_img = (out_img * 255).astype(np.uint8) # undo [0,1] normalization 
            # out_img = ((out_img + 1) * 127.5).astype(np.uint8) # undo [-1,1] normalization 
-           im = Image.fromarray(out_img)
+           im = Image.fromarray(out_img.astype(np.uint8))
            
            paired_im = np.hstack((facade_numpy[k,:,:,:], 255*np.ones((output_numpy[k,:,:,:].shape[0], 50, 3)), im))
            paired_im = Image.fromarray(paired_im.astype(np.uint8))
