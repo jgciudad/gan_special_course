@@ -18,22 +18,28 @@ from my_pix2pix import *
 import datetime
 import matplotlib.pyplot as plt
 
-program_start_time = time.time()
+
+# ---------- PATHS -------------------------------------------------------------------------------------------
 
 # test_path = '/zhome/02/5/153517/GANS/results/test_37/'
-test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta'
-test_path = test_path.replace(os.sep,'/')
-
-if not os.path.exists(os.path.dirname(test_path)):
-    os.makedirs(os.path.dirname(test_path))
-
 # images_path_train = '/zhome/02/5/153517/GANS/data/base2/train/'
 # images_path_test = '/zhome/02/5/153517/GANS/data/base2/test/'
 
+test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta'
+test_path = test_path.replace(os.sep,'/')
 images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/train/'
 images_path_train = images_path_train.replace(os.sep, '/')
 images_path_test = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/test/'
 images_path_test = images_path_test.replace(os.sep, '/')
+
+
+if not os.path.exists(os.path.dirname(test_path)):
+    os.makedirs(os.path.dirname(test_path))
+
+# -------------------------------------------------------------------------------------------------------------
+
+
+program_start_time = time.time()
 
 facade_dataset_train = FacadeDataset(images_path_train)
 facade_dataset_test = FacadeDataset(images_path_test)

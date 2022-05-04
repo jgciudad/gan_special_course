@@ -165,27 +165,39 @@ class MRXFDGDataset_B(data.Dataset):
         
         self.CT_range = (-200,800) # GNRAL WINDOW
         # CT_range = (0,80) # BRAIN WINDOW
-
         self.MR_range = (-40,800) # GNRAL WINDOW
-
+        
+    def transform(self, input_tensor, target_tensor):
+        
+        # Random horizontal flipping
+        if random.random() > 0.5:
+            input_tensor = TF.hflip(input_tensor)
+            target_tensor = TF.hflip(target_tensor)
+        
+        # Normalization
+        input_tensor = TF.normalize(input_tensor,(127.5), (127.5))
+        target_tensor = TF.normalize(target_tensor,(127.5), (127.5))
+        
+        return input_tensor, target_tensor
+    
     def __getitem__(self, index):
         CT_path = self.CT_files[index]
         MR_path = self.MR_files[index]
         sitk_CT = sitk.ReadImage(CT_path)
         sitk_MR = sitk.ReadImage(MR_path)
         CT_image = sitk.GetArrayFromImage(sitk_CT) #.resize(self.img_size))
-        MR_image = sitk.GetArrayFromImage(sitk_MR)
-        image_CT_cropped = CT_image[38:210,12:221,20:195]
-        image_MR_cropped = MR_image[38:210,12:221,20:195]
+        MR_image = sitk.GetArrayFromImage(sitk_MR).astype('float32')
+        image_CT_cropped = CT_image[38:219,6:223,18:199]
+        image_MR_cropped = MR_image[38:219,6:223,18:199]
         
         # WINDOWING PIXEL VALUES
         image_CT_cropped[image_CT_cropped < self.CT_range[0]] = self.CT_range[0]
         image_CT_cropped[image_CT_cropped > self.CT_range[1]] = self.CT_range[1]
-        image_CT_cropped = (image_CT_cropped - self.CT_range[0]) / np.absolute(self.CT_range[1] - self.CT_range[0]) # Rescaling to [0,1]
+        image_CT_cropped = 255*(image_CT_cropped - self.CT_range[0]) / np.absolute(self.CT_range[1] - self.CT_range[0]) # Rescaling to [0,255]
         
         image_MR_cropped[image_MR_cropped < self.MR_range[0]] = self.MR_range[0]
         image_MR_cropped[image_MR_cropped > self.MR_range[1]] = self.MR_range[1]
-        image_MR_cropped = (image_MR_cropped - self.MR_range[0]) / np.absolute(self.MR_range[1] - self.MR_range[0]) # Rescaling to [0,1]
+        image_MR_cropped = 255*(image_MR_cropped - self.MR_range[0]) / np.absolute(self.MR_range[1] - self.MR_range[0]) # Rescaling to [0,255]
 
         
         # rand_axis = random.randrange(0, 3, 1)
@@ -195,20 +207,20 @@ class MRXFDGDataset_B(data.Dataset):
             rand_slice = round(random.uniform(0.2, 0.8) * image_CT_cropped.shape[0])
             CT_slice = image_CT_cropped[rand_slice,:,:]
             MR_slice = image_MR_cropped[rand_slice,:,:]
-            CT_slice = cv2.copyMakeBorder(CT_slice,23,24,40,41,cv2.BORDER_CONSTANT,0)
-            MR_slice = cv2.copyMakeBorder(MR_slice,23,24,40,41,cv2.BORDER_CONSTANT,0)
+            CT_slice = cv2.copyMakeBorder(CT_slice,19,20,37,38,cv2.BORDER_CONSTANT,0)
+            MR_slice = cv2.copyMakeBorder(MR_slice,19,20,37,38,cv2.BORDER_CONSTANT,0)
         elif rand_axis == 1:
             rand_slice = round(random.uniform(0.2, 0.8) * image_CT_cropped.shape[0])
             CT_slice = image_CT_cropped[:,rand_slice,:]
             MR_slice = image_MR_cropped[:,rand_slice,:]
-            CT_slice = cv2.copyMakeBorder(CT_slice,42,42,40,41,cv2.BORDER_CONSTANT,0)
-            MR_slice = cv2.copyMakeBorder(MR_slice,42,42,40,41,cv2.BORDER_CONSTANT,0)
+            CT_slice = cv2.copyMakeBorder(CT_slice,37,38,37,38,cv2.BORDER_CONSTANT,0)
+            MR_slice = cv2.copyMakeBorder(MR_slice,37,38,37,38,cv2.BORDER_CONSTANT,0)
         elif rand_axis == 2:
             rand_slice = round(random.uniform(0.2, 0.8) * image_CT_cropped.shape[0])
             CT_slice = image_CT_cropped[:,:,rand_slice]
             MR_slice = image_MR_cropped[:,:,rand_slice]
-            CT_slice = cv2.copyMakeBorder(CT_slice,42,42,23,24,cv2.BORDER_CONSTANT,0)
-            MR_slice = cv2.copyMakeBorder(MR_slice,42,42,23,24,cv2.BORDER_CONSTANT,0)
+            CT_slice = cv2.copyMakeBorder(CT_slice,37,38,19,20,cv2.BORDER_CONSTANT,0)
+            MR_slice = cv2.copyMakeBorder(MR_slice,37,38,19,20,cv2.BORDER_CONSTANT,0)
             
         
         CT_slice = np.flip(CT_slice,(0,1)).copy()
@@ -220,8 +232,15 @@ class MRXFDGDataset_B(data.Dataset):
         # if len(image.shape) > 2 and image.shape[2] == 4:
         #     #if the image is .png (has 4 channels) convert the image from RGBA2RGB
         #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
+        
+        
+        CT_tensor = torch.from_numpy(CT_slice).unsqueeze(0).float()
+        MR_tensor = torch.from_numpy(MR_slice).unsqueeze(0).float()
+        
+        # Random flipping and normalization
+        CT_tensor, MR_tensor = self.transform(CT_tensor, MR_tensor)
     
-        return torch.from_numpy(CT_slice).unsqueeze(0).float(), torch.from_numpy(MR_slice).unsqueeze(0).float(), CT_path #.permute(2,1,0)
+        return CT_tensor, MR_tensor, CT_path #.permute(2,1,0)
     
     def __len__(self):
         return len(self.CT_files)
@@ -263,13 +282,13 @@ def segment_dataset_and_save(destination_folder, dataloader, model, device):
     
     for i, buildings_data in enumerate(dataloader, 0):
     
-        layout_images, facade_images, facade_paths = buildings_data
+        facade_images, layout_images, facade_paths = buildings_data
                    
         output = model(layout_images.to(device))
-        # output = TF.normalize(output,(-1, -1, -1),(1/127.5, 1/127.5, 1/127.5)) # Undo normalization
+        output = TF.normalize(output,(-1),(1/127.5)) # Undo normalization
         output_numpy = np.transpose(output.cpu().detach().numpy(),(0,2,3,1))
                 
-        # facade_images = TF.normalize(facade_images,(-1, -1, -1),(1/127.5, 1/127.5, 1/127.5)) # Undo normalization
+        facade_images = TF.normalize(facade_images,(-1),(1/127.5)) # Undo normalization
         facade_numpy = np.transpose(facade_images.detach().numpy(),(0,2,3,1))
         # facade_numpy = facade_numpy * 255  # undo [0,1] normalization 
         # facade_numpy = (facade_numpy + 1) * 127.5 # undo [-1,1] normalization 
