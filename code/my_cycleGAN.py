@@ -21,7 +21,7 @@ class CycleGANModel():
                  learning_rate = 0.0002,
                  lambda_A = 10,
                  lambda_B = 10,
-                 lambda_identity = 0.5,
+                 lambda_identity = 0, # Default value in the paper is 0.5, but it is used to enforce color preservation so i don´t need it (only for style-transfer in paintings)
                  input_nc = 3,
                  output_nc = 3,
                  ngf = 64,

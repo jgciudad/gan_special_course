@@ -154,10 +154,10 @@ class NLayerDiscriminator(nn.Module):
                 nf_mult_prev = nf_mult
                 nf_mult = min(2 ** n, 8)
                 sequence += [
-                    nn.Dropout(p = 0.5),
                     nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult, kernel_size=kw, stride=2, padding=padw),
                     norm_layer(ndf * nf_mult),
-                    nn.LeakyReLU(0.2, True)
+                    nn.LeakyReLU(0.2, True),
+                    nn.Dropout(p = 0.5)
                 ]
 
         nf_mult_prev = nf_mult
@@ -232,7 +232,7 @@ class GANLoss(nn.Module):
             flip = False
             if label_flipping == True:
                 th = random.uniform(0.0, 1.0)
-                if th < 0.35:
+                if th < 0.3:
                     flip = True
     
             if target_is_real:

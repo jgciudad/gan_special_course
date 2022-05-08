@@ -45,14 +45,17 @@ facade_dataset_test = MRXFDGDataset_B(images_path_test)
 
 model = Pix2PixModel(input_nc = 1,
                      output_nc = 1,
-                     lambda_L1 = 100,
+                     lambda_L1 = 1,
                      dropout_G = False,
                      dropout_D = False,
                      label_flipping = False,
                      label_smoothing = False)
 total_iters = 0                # the total number of training iterations
 
-NUM_EPOCHS = 1
+if not os.path.exists(os.path.dirname(test_path)):
+    os.makedirs(os.path.dirname(test_path))
+
+NUM_EPOCHS = 550
 D_STARTING_EPOCH = 0
 BATCH_SIZE = 1
 
@@ -112,7 +115,7 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
     G_GAN_history_epochs.append(np.mean(G_GAN_history_batches))
     G_L1_history_epochs.append(np.mean(G_L1_history_batches))  
     
-    if (epoch+1) in [1,20,60, 100, 150, 200, 250, 300]:
+    if (epoch+1) in [60, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550]:
         destination_epoch_train = os.path.join(test_path,'generated_images','train','epoch_'+str(epoch+1))
         segment_dataset_and_save(destination_epoch_train, train_dataloader, model.netG, model.device)
         destination_epoch_test = os.path.join(test_path,'generated_images','test','epoch_'+str(epoch+1))
