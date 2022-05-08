@@ -11,7 +11,6 @@ See frequently asked questions at: https://github.com/junyanz/pytorch-CycleGAN-a
 '''
 
 import time
-# from util.visualizer import Visualizer
 import os
 from data_loading import *
 from my_pix2pix import *
@@ -24,7 +23,7 @@ import matplotlib.pyplot as plt
 # images_path_train = r'/work3/s202283/Data GAN/home/pool/DM/TEP/CERMEP_MXFDG/BASE/DATABASE_SENT/ALL/derivatives/MNI/'
 # images_path_test = '/zhome/02/5/153517/GANS/data/base2/test/'
 
-test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta'
+test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta/'
 test_path = test_path.replace(os.sep,'/')   
 images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\MRXFDG-PET-CT-MRI\MRXFDG-PET-CT-MRI\iDB-CERMEP-MRXFDG_PET_CT_MRI\home\pool\DM\TEP\CERMEP_MXFDG\BASE\DATABASE_SENT\ALL\derivatives\MNI/'
 images_path_train = images_path_train.replace(os.sep, '/')
@@ -89,7 +88,6 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
     G_GAN_history_batches = []
     G_L1_history_batches = []
 
-    # model.update_learning_rate()    # update learning rates in the beginning of every epoch.
     for i, data in enumerate(train_dataloader):  # inner loop within one epoch
         
         real_B, real_A, facade_path = data

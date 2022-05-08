@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 # images_path_train = '/zhome/02/5/153517/GANS/data/base2/train/'
 # images_path_test = '/zhome/02/5/153517/GANS/data/base2/test/'
 
-test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta'
+test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta/'
 test_path = test_path.replace(os.sep,'/')
 images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/train/'
 images_path_train = images_path_train.replace(os.sep, '/')

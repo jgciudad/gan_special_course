@@ -163,9 +163,9 @@ class MRXFDGDataset_B(data.Dataset):
         # self.CT_size = CT_size
         # self.MR_size = MR_size
         
-        self.CT_range = (-200,800) # GNRAL WINDOW
+        self.CT_range = (-200,400) # GNRAL WINDOW
         # CT_range = (0,80) # BRAIN WINDOW
-        self.MR_range = (-40,800) # GNRAL WINDOW
+        self.MR_range = (0,900) # GNRAL WINDOW
         
     def transform(self, input_tensor, target_tensor):
         
@@ -259,23 +259,17 @@ class MRXFDGDataset_B(data.Dataset):
 # # test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=LENGTH_TEST)
 
 # data_iter_train = iter(train_dataloader)
-# CT_train, MR_train = data_iter_train.next()
+# CT_train, MR_train, CT_paths = data_iter_train.next()
 
 # # data_iter_test = iter(test_dataloader)
 # # CT_test, MR_test = data_iter_test.next()
 
-# fig, ax = plt.subplots(4,6,figsize=(10,10))
+# fig, ax = plt.subplots(4,3,figsize=(10,10))
 # for i in range(2):
-#     for j in range(6):
-#         ax[2*i,j].imshow(CT_train[(i+1)*j,:,:],'gray')
-#         ax[2*(i+1)-1,j].imshow(MR_train[(i+1)*j,:,:],'gray')
+#     for j in range(3):
+#         ax[2*i,j].imshow(CT_train[(i+1)*j,:,:].permute(1,2,0),'gray')
+#         ax[2*(i+1)-1,j].imshow(MR_train[(i+1)*j,:,:].permute(1,2,0),'gray')
 # plt.show()
-
-    
-
-# # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# # images_test, labels_test = images_test.to(device), labels_test.to(device)
-# # images_test, labels_test = Variable(images_test), Variable(labels_test)
 
 
 def segment_dataset_and_save(destination_folder, dataloader, model, device):
@@ -290,15 +284,20 @@ def segment_dataset_and_save(destination_folder, dataloader, model, device):
                 
         facade_images = TF.normalize(facade_images,(-1),(1/127.5)) # Undo normalization
         facade_numpy = np.transpose(facade_images.detach().numpy(),(0,2,3,1))
-        # facade_numpy = facade_numpy * 255  # undo [0,1] normalization 
-        # facade_numpy = (facade_numpy + 1) * 127.5 # undo [-1,1] normalization 
+        layout_images = TF.normalize(layout_images,(-1),(1/127.5)) # Undo normalization
+        layout_numpy = np.transpose(layout_images.detach().numpy(),(0,2,3,1))
+        
         
         for k, out_img in enumerate(output_numpy):
            # out_img = (out_img * 255).astype(np.uint8) # undo [0,1] normalization 
            # out_img = ((out_img + 1) * 127.5).astype(np.uint8) # undo [-1,1] normalization 
            im = Image.fromarray(out_img.squeeze(2).astype(np.uint8))
            
-           paired_im = np.hstack((facade_numpy[k,:,:,:].squeeze(2), 255*np.ones((output_numpy[k,:,:,:].shape[0], 50)), im))
+           paired_im = np.hstack((layout_numpy[k,:,:,:].squeeze(2),
+                                  255*np.ones((output_numpy[k,:,:,:].shape[0], 50)),
+                                  facade_numpy[k,:,:,:].squeeze(2),
+                                  255*np.ones((output_numpy[k,:,:,:].shape[0], 50)),
+                                  im))
            paired_im = Image.fromarray(paired_im.astype(np.uint8))
                         
            im_path = os.path.join(destination_folder,'images',facade_paths[k].split(os.sep)[-2]+'.jpg')
