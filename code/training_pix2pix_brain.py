@@ -62,7 +62,6 @@ BATCH_SIZE = 1
 train_dataloader = torch.utils.data.DataLoader(facade_dataset_train, batch_size=BATCH_SIZE)
 test_dataloader = torch.utils.data.DataLoader(facade_dataset_test, batch_size=len(facade_dataset_test))
 
-print(len(facade_dataset_train))
 data_iter_train = iter(train_dataloader)
 layout_train, facade_train, facade_paths_train = data_iter_train.next()
 data_iter_test = iter(test_dataloader)
@@ -113,11 +112,11 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
     G_GAN_history_epochs.append(np.mean(G_GAN_history_batches))
     G_L1_history_epochs.append(np.mean(G_L1_history_batches))  
     
-    if (epoch+1) in [60, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550]:
+    if (epoch+1) in [1,60, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550]:
         destination_epoch_train = os.path.join(test_path,'generated_images','train','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_train, train_dataloader, model.netG, model.device)
+        generate_and_save_pix2pix(destination_epoch_train, train_dataloader, model, model.device)
         destination_epoch_test = os.path.join(test_path,'generated_images','test','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_test, test_dataloader, model.netG, model.device)
+        generate_and_save_pix2pix(destination_epoch_test, test_dataloader, model, model.device)
         
     print('Time taken:', str(datetime.timedelta(seconds = time.time()-epoch_start_time)))
 

@@ -110,9 +110,9 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
     
     if (epoch+1) in [1,60,100,150,200,250,300,350,400]:
         destination_epoch_train = os.path.join(test_path,'generated_images','train','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_train, train_dataloader, model.netG_A, model.device)
+        generate_and_save_cycleGAN(destination_epoch_train, train_dataloader, model, model.device)
         destination_epoch_test = os.path.join(test_path,'generated_images','test','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_test, test_dataloader, model.netG_A, model.device)
+        generate_and_save_cycleGAN(destination_epoch_test, test_dataloader, model, model.device)
         
     print('Time taken:', str(datetime.timedelta(seconds = time.time()-epoch_start_time)))
 

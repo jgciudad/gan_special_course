@@ -111,11 +111,11 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
     G_GAN_history_epochs.append(np.mean(G_GAN_history_batches))
     G_L1_history_epochs.append(np.mean(G_L1_history_batches))  
     
-    if (epoch+1) in [60, 100, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400]:
+    if (epoch+1) in [1, 60, 100, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400]:
         destination_epoch_train = os.path.join(test_path,'generated_images','train','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_train, train_dataloader, model.netG, model.device)
+        generate_and_save_pix2pix(destination_epoch_train, train_dataloader, model, model.device)
         destination_epoch_test = os.path.join(test_path,'generated_images','test','epoch_'+str(epoch+1))
-        segment_dataset_and_save(destination_epoch_test, test_dataloader, model.netG, model.device)
+        generate_and_save_pix2pix(destination_epoch_test, test_dataloader, model, model.device)
         
     print('Time taken:', str(datetime.timedelta(seconds = time.time()-epoch_start_time)))
 
