@@ -165,7 +165,7 @@ class MRXFDGDataset_B(data.Dataset):
         
         self.CT_range = (-200,400) # GNRAL WINDOW
         # CT_range = (0,80) # BRAIN WINDOW
-        self.MR_range = (0,900) # GNRAL WINDOW
+        self.MR_range = (20,900) # GNRAL WINDOW
         
     def transform(self, input_tensor, target_tensor):
         
@@ -348,6 +348,8 @@ def generate_and_save_pix2pix(destination_folder, dataloader, model, device):
             
             im.save(im_path)
             fig.savefig(paired_im_path)
+            
+            plt.close(fig)
            
            
 def undo_normalization(tensor):
@@ -366,51 +368,53 @@ def undo_normalization(tensor):
     return unnormalized_tensor_numpy
 
         
-# def generate_and_save_cycleGAN(destination_folder, dataloader, model, device):
+def generate_and_save_cycleGAN(destination_folder, dataloader, model, device):
     
-#     for i, buildings_data in enumerate(dataloader, 0):
+    for i, buildings_data in enumerate(dataloader, 0):
     
-#         facade_images, layout_images, facade_paths = buildings_data
+        real_CT, real_MR, CT_paths = buildings_data
                    
-#         fake_facade, rec_layout, fake_layout, rec_facade = model.forward(layout_images.to(device),facade_images.to(device))
+        fake_CT, rec_MR, fake_MR, rec_CT = model.forward(real_MR.to(device),real_CT.to(device))
         
-#         fake_facade_numpy = undo_normalization(fake_facade)
-#         facade_images_numpy = undo_normalization(facade_images)
-#         layout_images_numpy = undo_normalization(layout_images)
-#         rec_layout_numpy = undo_normalization(rec_layout)
-#         fake_layout_numpy = undo_normalization(fake_layout)
-#         rec_facade_numpy = undo_normalization(rec_facade)
+        fake_CT_numpy = undo_normalization(fake_CT)
+        real_CT_numpy = undo_normalization(real_CT)
+        real_MR_numpy = undo_normalization(real_MR)
+        rec_MR_numpy = undo_normalization(rec_MR)
+        fake_MR_numpy = undo_normalization(fake_MR)
+        rec_CT_numpy = undo_normalization(rec_CT)
              
-#         for k, out_img in enumerate(fake_facade_numpy):
-#             im = Image.fromarray(out_img.astype(np.uint8))
+        for k, out_img in enumerate(fake_CT_numpy):
+            im = Image.fromarray(out_img.squeeze(2).astype(np.uint8))
            
-#             fig, ax = plt.subplots(3,2,figsize=(10,14))
-#             ax[0,0].imshow(facade_images_numpy[k]/255)
-#             ax[0,0].title.set_text('Real facade')
-#             ax[1,0].imshow(fake_facade_numpy[k]/255)
-#             ax[1,0].title.set_text('Fake facade')
-#             ax[2,0].imshow(rec_facade_numpy[k]/255)
-#             ax[2,0].title.set_text('Rec. facade')
-#             ax[0,1].imshow(layout_images_numpy[k]/255)
-#             ax[0,1].title.set_text('Real layout')
-#             ax[1,1].imshow(fake_layout_numpy[k]/255)
-#             ax[1,1].title.set_text('Fake layout')
-#             ax[2,1].imshow(rec_layout_numpy[k]/255)
-#             ax[2,1].title.set_text('Rec. layout')
+            fig, ax = plt.subplots(3,2,figsize=(10,14))
+            ax[0,0].imshow(real_CT_numpy[k]/255,'gray')
+            ax[0,0].title.set_text('Real CT')
+            ax[1,0].imshow(fake_CT_numpy[k]/255,'gray')
+            ax[1,0].title.set_text('Fake CT')
+            ax[2,0].imshow(rec_CT_numpy[k]/255,'gray')
+            ax[2,0].title.set_text('Rec. CT')
+            ax[0,1].imshow(real_MR_numpy[k]/255,'gray')
+            ax[0,1].title.set_text('Real MR')
+            ax[1,1].imshow(fake_MR_numpy[k]/255,'gray')
+            ax[1,1].title.set_text('Fake MR')
+            ax[2,1].imshow(rec_MR_numpy[k]/255,'gray')
+            ax[2,1].title.set_text('Rec. MR')
             
-#             for ax_row in ax:
-#                 for ax_elem in ax_row:
-#                     ax_elem.axis('off')
+            for ax_row in ax:
+                for ax_elem in ax_row:
+                    ax_elem.axis('off')
                          
-#             im_path = os.path.join(destination_folder,'images',facade_paths[k].split(os.sep)[-1][:-4]+'.jpg')
-#             paired_im_path = os.path.join(destination_folder,'paired_images',facade_paths[k].split(os.sep)[-1][:-4]+'.jpg')
+            im_path = os.path.join(destination_folder,'images',CT_paths[k].split(os.sep)[-1][:-4]+'.jpg')
+            paired_im_path = os.path.join(destination_folder,'paired_images',CT_paths[k].split(os.sep)[-1][:-4]+'.jpg')
                     
-#             if not os.path.exists(os.path.dirname(im_path)):
-#                 os.makedirs(os.path.dirname(im_path))
-#             if not os.path.exists(os.path.dirname(paired_im_path)):
-#                 os.makedirs(os.path.dirname(paired_im_path))
+            if not os.path.exists(os.path.dirname(im_path)):
+                os.makedirs(os.path.dirname(im_path))
+            if not os.path.exists(os.path.dirname(paired_im_path)):
+                os.makedirs(os.path.dirname(paired_im_path))
             
-#             im.save(im_path)
-#             fig.savefig(paired_im_path)
+            im.save(im_path)
+            fig.savefig(paired_im_path)
+
+            plt.close(fig)
            
            

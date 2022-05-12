@@ -197,6 +197,8 @@ def generate_and_save_cycleGAN(destination_folder, dataloader, model, device):
                 
                 im.save(im_path)
                 fig.savefig(paired_im_path)
+                
+                plt.close(fig)
 
 
   
