@@ -56,7 +56,7 @@ class FacadeDataset(data.Dataset):
             target_tensor = TF.hflip(target_tensor)
         
         # Normalization
-        input_tensor = TF.normalize(input_tensor,(127.5), (127.5))
+        input_tensor = TF.normalize(input_tensor,(127.5, 127.5, 127.5), (127.5, 127.5, 127.5))
         target_tensor = TF.normalize(target_tensor,(127.5, 127.5, 127.5), (127.5, 127.5, 127.5))
         
         return input_tensor, target_tensor
@@ -64,8 +64,8 @@ class FacadeDataset(data.Dataset):
     def __getitem__(self, index, img_size = (256,256)):
         facade_path = self.facade_files[index]
         layout_path = self.layout_files[index]
-        facade_img = Image.open(facade_path).resize(img_size)
-        layout_img = Image.open(layout_path).resize(img_size)
+        facade_img = Image.open(facade_path).resize(img_size).convert('RGB')
+        layout_img = Image.open(layout_path).resize(img_size).convert('RGB')
         
         # [0,1] normalization
         # facade_img = np.array(facade_img)/255
@@ -83,7 +83,7 @@ class FacadeDataset(data.Dataset):
         #     #if the image is .png (has 4 channels) convert the image from RGBA2RGB
         #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
         
-        layout_tensor = torch.from_numpy(np.array(layout_img)).float().unsqueeze(0)
+        layout_tensor = torch.from_numpy(np.array(layout_img)).permute(2,0,1).float()# .unsqueeze(0)
         facade_tensor =  torch.from_numpy(np.array(facade_img)).permute(2,0,1).float()
         
         # Random flipping and normalization
@@ -129,6 +129,8 @@ def generate_and_save_pix2pix(destination_folder, dataloader, model, device):
                 
                 im.save(im_path)
                 fig.savefig(paired_im_path)
+                
+                plt.close(fig)
            
            
 def undo_normalization(tensor):

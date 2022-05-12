@@ -41,7 +41,7 @@ program_start_time = time.time()
 facade_dataset_train = FacadeDataset(images_path_train)
 facade_dataset_test = FacadeDataset(images_path_test)
 
-model = Pix2PixModel(input_nc = 1,
+model = Pix2PixModel(input_nc = 3,
                      output_nc = 3,
                      lambda_L1 = 10,
                      dropout_G = True,
@@ -60,7 +60,7 @@ BATCH_SIZE = 1
 
 # Create DataLoaders
 train_dataloader = torch.utils.data.DataLoader(facade_dataset_train, batch_size=BATCH_SIZE)
-test_dataloader = torch.utils.data.DataLoader(facade_dataset_test, batch_size=len(facade_dataset_test))
+test_dataloader = torch.utils.data.DataLoader(facade_dataset_test, batch_size=BATCH_SIZE)
 
 data_iter_train = iter(train_dataloader)
 layout_train, facade_train, facade_paths_train = data_iter_train.next()

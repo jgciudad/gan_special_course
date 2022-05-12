@@ -50,7 +50,7 @@ BATCH_SIZE = 1
 
 # Create DataLoaders
 train_dataloader = torch.utils.data.DataLoader(facade_dataset_train, batch_size=BATCH_SIZE)
-test_dataloader = torch.utils.data.DataLoader(facade_dataset_test, batch_size=len(facade_dataset_test))
+test_dataloader = torch.utils.data.DataLoader(facade_dataset_test, batch_size=BATCH_SIZE)
 
 data_iter_train = iter(train_dataloader)
 layout_train, facade_train, facade_paths_train = data_iter_train.next()

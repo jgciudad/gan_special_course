@@ -54,7 +54,7 @@ class Pix2PixModel():
         self.netG = self.netG.to(self.device)
         
         if self.isTrain: 
-            self.netD = my_networks.NLayerDiscriminator(input_nc=output_nc+1, ndf=64, n_layers=n_layers_D, norm_layer=norm_layer, use_dropout=dropout_D)
+            self.netD = my_networks.NLayerDiscriminator(input_nc=output_nc+input_nc, ndf=64, n_layers=n_layers_D, norm_layer=norm_layer, use_dropout=dropout_D)
             self.netD = self.netD.to(self.device)
         
         
