@@ -121,37 +121,7 @@ def resample_img(CT_image, MR_image, is_label=False):
 # the higher the 1st axis, the further I move in longitudinal axis (from the feet to the head) (I will call it X axis)
 # the higher the 2nd axis, the further I move in the sagital axis (from the back to the chest) (I will call it Y axis)
 # how to know towards where I move in the 3rd axes?
-
-class MRXFDGDataset(data.Dataset):
-    
-    def __init__(self, folder_path): #, CT_size, MR_size):
-        super(MRXFDGDataset, self).__init__()
-        folder_path = folder_path.replace(os.sep, '/')
-        self.CT_files = glob.glob(os.path.join(folder_path,'*/*pet_ct.nii.gz'))
-        self.MR_files = glob.glob(os.path.join(folder_path,'*/*pet_T1w.nii.gz'))
-        # self.CT_size = CT_size
-      # self.MR_size = MR_size
-
-    def __getitem__(self, index):
-        CT_path = self.CT_files[index]
-        MR_path = self.MR_files[index]
-        sitk_CT = sitk.ReadImage(CT_path)
-        sitk_MR = sitk.ReadImage(MR_path)
-        CT_image = sitk.GetArrayFromImage(sitk_CT) #.resize(self.img_size))
-        MR_image = sitk.GetArrayFromImage(sitk_MR)
-        MR_image = MR_image.reshape([MR_image.shape[2],MR_image[0],MR_image[1]])
-     
-        # if len(image.shape) ==2:
-        #     image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-        # if len(image.shape) > 2 and image.shape[2] == 4:
-        #     #if the image is .png (has 4 channels) convert the image from RGBA2RGB
-        #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
-    
-        return torch.from_numpy(CT_image).float(), torch.from_numpy(MR_image).float() #.permute(2,1,0)
-    
-    def __len__(self):
-        return len(self.MR_files)
-  
+ 
 
 class MRXFDGDataset_B(data.Dataset):
     
@@ -163,9 +133,13 @@ class MRXFDGDataset_B(data.Dataset):
         # self.CT_size = CT_size
         # self.MR_size = MR_size
         
-        self.CT_range = (-200,400) # GNRAL WINDOW
-        # CT_range = (0,80) # BRAIN WINDOW
-        self.MR_range = (20,900) # GNRAL WINDOW
+        # OLD WINDOW
+        self.CT_range = (-200,800)
+        self.MR_range = (-40,800)
+        
+        # NEW WINDOW
+        # self.CT_range = (-200,400) 
+        # self.MR_range = (20,900)
         
     def transform(self, input_tensor, target_tensor):
         
@@ -189,7 +163,7 @@ class MRXFDGDataset_B(data.Dataset):
         MR_image = sitk.GetArrayFromImage(sitk_MR).astype('float32')
         image_CT_cropped = CT_image[38:219,6:223,18:199]
         image_MR_cropped = MR_image[38:219,6:223,18:199]
-        
+
         # WINDOWING PIXEL VALUES
         image_CT_cropped[image_CT_cropped < self.CT_range[0]] = self.CT_range[0]
         image_CT_cropped[image_CT_cropped > self.CT_range[1]] = self.CT_range[1]
@@ -215,6 +189,7 @@ class MRXFDGDataset_B(data.Dataset):
             MR_slice = image_MR_cropped[:,rand_slice,:]
             CT_slice = cv2.copyMakeBorder(CT_slice,37,38,37,38,cv2.BORDER_CONSTANT,0)
             MR_slice = cv2.copyMakeBorder(MR_slice,37,38,37,38,cv2.BORDER_CONSTANT,0)
+
         elif rand_axis == 2:
             rand_slice = round(random.uniform(0.2, 0.8) * image_CT_cropped.shape[0])
             CT_slice = image_CT_cropped[:,:,rand_slice]
@@ -225,14 +200,14 @@ class MRXFDGDataset_B(data.Dataset):
         
         CT_slice = np.flip(CT_slice,(0,1)).copy()
         MR_slice = np.flip(MR_slice,(0,1)).copy()
-        # MR_image = MR_image.reshape([MR_image.shape[2],MR_image[0],MR_image[1]])
-     
-        # if len(image.shape) ==2:
-        #     image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-        # if len(image.shape) > 2 and image.shape[2] == 4:
-        #     #if the image is .png (has 4 channels) convert the image from RGBA2RGB
-        #     image = cv2.cvtColor(image, cv2.COLOR_BGRA2BGR)
-        
+
+        # #cropping ear region
+        # CT_ear = np.zeros(CT_slice.shape)
+        # CT_ear[150:,:] = CT_slice[150:,:]
+        # CT_slice = CT_ear              
+        # MR_ear = np.zeros(MR_slice.shape)
+        # MR_ear[150:,:] = MR_slice[150:,:]
+        # MR_slice = MR_ear         
         
         CT_tensor = torch.from_numpy(CT_slice).unsqueeze(0).float()
         MR_tensor = torch.from_numpy(MR_slice).unsqueeze(0).float()

@@ -19,16 +19,16 @@ import matplotlib.pyplot as plt
 
 # --------- PATHS -----------------------------------------------------------------------------------------------
 
-# test_path = '/zhome/02/5/153517/GANS/results/brain/test1/'
-# images_path_train = r'/work3/s202283/Data GAN/home/pool/DM/TEP/CERMEP_MXFDG/BASE/DATABASE_SENT/ALL/derivatives/MNI/'
-# images_path_test = '/zhome/02/5/153517/GANS/data/base2/test/'
+test_path = '/zhome/02/5/153517/GANS/results/brain/pix2pix/test_2c'
+images_path_train = r'/work3/s202283/GANS/Data GAN/home/pool/DM/TEP/CERMEP_MXFDG/BASE/DATABASE_SENT/ALL/derivatives/MNI/'
+images_path_test = '/work3/s202283/GANS/Data GAN/home/pool/DM/TEP/CERMEP_MXFDG/BASE/DATABASE_SENT/ALL/derivatives/MNI_test/'
 
-test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta/'
-test_path = test_path.replace(os.sep,'/')   
-images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\MRXFDG-PET-CT-MRI\MRXFDG-PET-CT-MRI\iDB-CERMEP-MRXFDG_PET_CT_MRI\home\pool\DM\TEP\CERMEP_MXFDG\BASE\DATABASE_SENT\ALL\derivatives\MNI/'
-images_path_train = images_path_train.replace(os.sep, '/')
-images_path_test = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\MRXFDG-PET-CT-MRI\MRXFDG-PET-CT-MRI\iDB-CERMEP-MRXFDG_PET_CT_MRI\home\pool\DM\TEP\CERMEP_MXFDG\BASE\DATABASE_SENT\ALL\derivatives\MNI_test/'
-images_path_test = images_path_test.replace(os.sep, '/')    
+# test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta/'
+# test_path = test_path.replace(os.sep,'/')   
+# images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\MRXFDG-PET-CT-MRI\MRXFDG-PET-CT-MRI\iDB-CERMEP-MRXFDG_PET_CT_MRI\home\pool\DM\TEP\CERMEP_MXFDG\BASE\DATABASE_SENT\ALL\derivatives\MNI/'
+# images_path_train = images_path_train.replace(os.sep, '/')
+# images_path_test = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\MRXFDG-PET-CT-MRI\MRXFDG-PET-CT-MRI\iDB-CERMEP-MRXFDG_PET_CT_MRI\home\pool\DM\TEP\CERMEP_MXFDG\BASE\DATABASE_SENT\ALL\derivatives\MNI_test/'
+# images_path_test = images_path_test.replace(os.sep, '/')    
 
 
 if not os.path.exists(os.path.dirname(test_path)):
