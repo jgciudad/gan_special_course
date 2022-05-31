@@ -54,7 +54,7 @@ if not os.path.exists(os.path.dirname(test_path)):
     os.makedirs(os.path.dirname(test_path))
     
     
-NUM_EPOCHS = 400
+NUM_EPOCHS = 1
 D_STARTING_EPOCH = 0
 BATCH_SIZE = 1
 

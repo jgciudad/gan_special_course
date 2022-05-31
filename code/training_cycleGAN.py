@@ -20,16 +20,16 @@ import matplotlib.pyplot as plt
 
 # -------------------------------------- PATHS ------------------------------------------------------------
 
-test_path = '/zhome/02/5/153517/GANS/results/facades/cycleGAN/test_RGB/'
-images_path_train = '/zhome/02/5/153517/GANS/data/base2/train/'
-images_path_test = '/zhome/02/5/153517/GANS/data/base2/test/'
+# test_path = '/zhome/02/5/153517/GANS/results/facades/cycleGAN/test_RGB/'
+# images_path_train = '/zhome/02/5/153517/GANS/data/base2/train/'
+# images_path_test = '/zhome/02/5/153517/GANS/data/base2/test/'
 
-# test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta/'
-# test_path = test_path.replace(os.sep,'/')
-# images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/train/'
-# images_path_train = images_path_train.replace(os.sep, '/')
-# images_path_test = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/test/'
-# images_path_test = images_path_test.replace(os.sep, '/')
+test_path = r'C:\Users\javig\Desktop\eliminar_esta_carpeta/'
+test_path = test_path.replace(os.sep,'/')
+images_path_train = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/train/'
+images_path_train = images_path_train.replace(os.sep, '/')
+images_path_test = r'C:\Users\javig\Documents\DTU data (not in drive)\GANs data\CMP_facade_DB_base\base/test/'
+images_path_test = images_path_test.replace(os.sep, '/')
 
 #-------------------------------------------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ model = CycleGANModel(input_nc = 3,
 if not os.path.exists(os.path.dirname(test_path)):
     os.makedirs(os.path.dirname(test_path))
     
-NUM_EPOCHS = 400
+NUM_EPOCHS = 1
 D_STARTING_EPOCH = 0
 BATCH_SIZE = 1
 
@@ -86,7 +86,7 @@ for epoch in range(NUM_EPOCHS):    # outer loop for different epochs; we save th
         real_A, real_B, facade_paths = data
         
         real_A, real_B = real_A.to(model.device), real_B.to(model.device)
-
+                   
         model.optimize_parameters(real_A, real_B)   # calculate loss functions, get gradients, update network weights
         
         losses = model.get_current_losses()

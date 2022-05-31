@@ -215,7 +215,7 @@ class MRXFDGDataset_B(data.Dataset):
         # Random flipping and normalization
         CT_tensor, MR_tensor = self.transform(CT_tensor, MR_tensor)
     
-        return CT_tensor, MR_tensor, CT_path #.permute(2,1,0)
+        return MR_tensor, CT_tensor, CT_path #.permute(2,1,0)
     
     def __len__(self):
         return len(self.CT_files)
@@ -291,7 +291,7 @@ def generate_and_save_pix2pix(destination_folder, dataloader, model, device):
     
     for i, buildings_data in enumerate(dataloader, 0):
         
-        real_CT, real_MR, CT_paths = buildings_data
+        real_MR, real_CT, CT_paths = buildings_data
                    
         fake_CT = model.forward(real_MR.to(device))
         
@@ -345,9 +345,9 @@ def undo_normalization(tensor):
         
 def generate_and_save_cycleGAN(destination_folder, dataloader, model, device):
     
-    for i, buildings_data in enumerate(dataloader, 0):
+    for i, brain_data in enumerate(dataloader, 0):
     
-        real_CT, real_MR, CT_paths = buildings_data
+        real_MR, real_CT, CT_paths = brain_data
                    
         fake_CT, rec_MR, fake_MR, rec_CT = model.forward(real_MR.to(device),real_CT.to(device))
         
